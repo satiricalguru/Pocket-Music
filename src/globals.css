@@ -1,0 +1,191 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/inter/800.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Backgrounds */
+  --color-base: #000000;
+  --color-elevated: #121212;
+  --color-highlight: #1a1a1a;
+  --color-press: #000000;
+  --color-nav: #000000;
+
+  /* Surfaces */
+  --color-surface: #242424;
+  --color-surface-h: #2a2a2a;
+  --color-input: #2a2a2a;
+  --color-input-h: #3a3a3a;
+
+  /* Accent */
+  --color-green: #1db954;
+  --color-green-h: #1ed760;
+  --color-green-press: #169c46;
+
+  /* Text */
+  --color-text-1: #ffffff;
+  --color-text-2: #b3b3b3;
+  --color-text-3: #727272;
+  --color-text-4: #535353;
+
+  /* Borders */
+  --color-border: #282828;
+
+  /* Layout */
+  --sidebar-w: 240px;
+  --playerbar-h: 90px;
+  --topbar-h: 64px;
+  --titlebar-h: 32px;
+
+  /* Typography — Inter as the closest open alternative to Spotify's Circular */
+  --font-ui: 'Inter', 'CircularStd', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Transitions */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-normal: 200ms;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-base);
+  color: var(--color-text-1);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  user-select: none;
+}
+
+/* Allow text selection in inputs and where explicitly enabled */
+input,
+textarea,
+[contenteditable],
+.selectable {
+  user-select: text;
+}
+
+/* Scrollbar — Spotify style (thin, dark) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::selection {
+  background: rgba(29, 185, 84, 0.3);
+}
+
+/* Drag region for macOS frameless integration */
+.macos-drag-region {
+  -webkit-app-region: drag;
+}
+.macos-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Equalizer bars animation (used in playing track rows) */
+@keyframes eq-bar-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 12px; }
+}
+@keyframes eq-bar-2 {
+  0%, 100% { height: 12px; }
+  50% { height: 4px; }
+}
+@keyframes eq-bar-3 {
+  0%, 100% { height: 8px; }
+  33% { height: 4px; }
+  66% { height: 12px; }
+}
+
+/* Shimmer used by download progress bars */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-surface-h) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@keyframes indeterminate-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+.animate-indeterminate {
+  animation: indeterminate-bar 1.5s infinite linear;
+}
+
+
+/* Subtle fade-in for view transitions */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fade-in var(--dur-normal) var(--ease-standard);
+}
+
+/* Hide native range styling so our custom sliders render consistently */
+input[type='range'].spotlocal-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type='range'].spotlocal-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+input[type='range'].spotlocal-slider:hover::-webkit-slider-thumb {
+  opacity: 1;
+}
+
+/* Utility helpers (kept minimal — Tailwind handles the rest) */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

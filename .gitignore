@@ -1,0 +1,20 @@
+# Dependency directories
+node_modules/
+
+# Build and distribution outputs
+dist/
+dist-electron/
+out/
+build/
+*.tsbuildinfo
+
+# User data and media downloads
+music/
+spotlocal.db
+
+# Workspace / IDE files
+.DS_Store
+Thumbs.db
+brain/
+.gemini/
+*.log

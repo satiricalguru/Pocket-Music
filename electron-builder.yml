@@ -1,0 +1,34 @@
+appId: com.pocketmusic.app
+productName: Pocket Music
+directories:
+  output: dist-electron
+files:
+  - dist/**
+  - dist-electron/*.js
+  - dist-electron/*.mjs
+  - dist-electron/*.cjs
+  - package.json
+extraResources:
+  - from: backend
+    to: backend
+    filter:
+      - "**/*.py"
+      - requirements.txt
+asarUnpack:
+  - "**/*better-sqlite3*/**"
+  - "**/*better_sqlite3*"
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  category: public.app-category.music
+  icon: resources/icon.icns
+  hardenedRuntime: false
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: resources/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
