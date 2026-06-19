@@ -6,14 +6,11 @@ import { getSpotifyLocalFilesPath } from '../utils/spotifyLocalPath';
 import { syncAllTracksToSpotify } from './library.ipc';
 
 const SETTINGS_FILE = () => {
-  let appFolder = '';
   if (app.isPackaged) {
-    const exeDir = path.dirname(app.getPath('exe'));
-    appFolder = process.platform === 'darwin' ? path.resolve(exeDir, '../../..') : exeDir;
+    return path.join(app.getPath('userData'), 'settings.json');
   } else {
-    appFolder = app.getAppPath();
+    return path.join(app.getAppPath(), 'settings.json');
   }
-  return path.join(appFolder, 'settings.json');
 };
 
 let MUSIC_DIR = '';

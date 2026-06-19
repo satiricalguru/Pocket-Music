@@ -35,7 +35,9 @@ function getAppFolder(): string {
   }
 }
 
-const MUSIC_DIR = path.join(getAppFolder(), 'music');
+const MUSIC_DIR = app.isPackaged
+  ? path.join(app.getPath('music'), 'Pocket Music')
+  : path.join(getAppFolder(), 'music');
 
 function getMainWindow(): BrowserWindow | null {
   return mainWindow;

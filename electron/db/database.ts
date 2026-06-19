@@ -8,14 +8,11 @@ let dbPath = '';
 
 export function getDbPath(): string {
   if (dbPath) return dbPath;
-  let appFolder = '';
   if (app.isPackaged) {
-    const exeDir = path.dirname(app.getPath('exe'));
-    appFolder = process.platform === 'darwin' ? path.resolve(exeDir, '../../..') : exeDir;
+    dbPath = path.join(app.getPath('userData'), 'spotlocal.db');
   } else {
-    appFolder = app.getAppPath();
+    dbPath = path.join(app.getAppPath(), 'spotlocal.db');
   }
-  dbPath = path.join(appFolder, 'spotlocal.db');
   return dbPath;
 }
 
