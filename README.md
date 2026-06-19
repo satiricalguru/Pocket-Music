@@ -7,11 +7,12 @@
 <h3 align="center">Pocket Music</h3>
 
 <p align="center">
-  <strong>A Pixel-Accurate Spotify-Style Local Music Player & Downloader</strong>
+  <strong>A Pixel-Accurate Spotify-Style Local Music Player, Downloader & Audio Soundboard</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Electron-31.2.1-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Electron badge" />
+  <img src="https://img.shields.io/badge/Capacitor-8.4-0054FF?style=for-the-badge&logo=capacitor&logoColor=white" alt="Capacitor badge" />
   <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React badge" />
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python badge" />
   <img src="https://img.shields.io/badge/FastAPI-0.111.0-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI badge" />
@@ -22,19 +23,23 @@
 
 ## ✨ Overview
 
-**Pocket Music** is an elegant, pixel-accurate clone of the Spotify desktop client, built specifically for playing and organizing your local audio files. It features an integrated high-performance Python backend that can search, download, and auto-tag tracks from Spotify and YouTube using `yt-dlp` and `spotdl`, complete with high-quality album art and metadata.
+**Pocket Music** is an elegant, pixel-accurate clone of the Spotify client, built for desktop and mobile environments. Organize, play, and search your local audio files. It features an integrated high-performance Python backend (via FastAPI) that downloads and auto-tags tracks from Spotify and YouTube using `yt-dlp` and `spotdl`, complete with high-quality metadata.
 
-No subscriptions, no ads—just your music, locally owned, running in a sleek desktop app wrapper.
+With our latest update, Pocket Music is now **fully mobile-responsive** with Capacitor Android integration, and features a **Web Audio Soundboard** for live mic and music mixing.
+
+No subscriptions, no ads—just your music, locally owned and beautifully displayed.
 
 ---
 
 ## 🚀 Key Features
 
 *   🎨 **Pixel-Accurate Spotify UI**: Completely matched interface, including the sidebar, player controls, queuing, search bar, active playlists, and responsive grid layouts.
-*   ⚡ **Translucent Vibrancy & Sleek Themes**: macOS vibrancy and Windows custom frame support for a ultra-premium native app feel.
+*   📱 **Cross-Platform Mobile Integration**: Fully responsive Spotify-like mobile client powered by **Capacitor**, featuring a dedicated bottom navigation bar, touch-friendly context menus, and a premium "Now Playing" full-screen mobile panel.
+*   🎛️ **Audio Soundboard Panel**: Built-in soundboard with mic + music real-time Web Audio mixing, volume control, and custom hardware output device routing.
+*   ⚡ **Translucent Vibrancy & Sleek Themes**: macOS vibrancy and Windows custom frame support for an ultra-premium native desktop app feel.
 *   📥 **Integrated Smart Downloader**: Input Spotify track/album/playlist URLs or search terms to automatically fetch audio files and convert them to high-bitrate MP3s.
 *   🏷️ **Automatic Metadata Tagging**: Fully auto-tags downloaded tracks with correct title, artist, album, track number, lyrics, and embedded high-resolution album cover art.
-*   🎮 **Discord Rich Presence (DRPC)**: Automatically displays your current track, artist, album art, and progress directly in Discord with real-time updates.
+*   🎮 **Discord Rich Presence (DRPC)**: Automatically displays your current track, artist, album art, and progress directly in Discord with real-time updates (Desktop only).
 *   🔍 **Instant Library Scanner**: Automatically parses your music directory, indexing files in a high-speed SQLite database for lightning-fast search and sorting.
 *   ⌨️ **Media Key Support & Global Shortcuts**: Full integration with native OS media controls (Play/Pause, Next, Previous).
 
@@ -42,13 +47,15 @@ No subscriptions, no ads—just your music, locally owned, running in a sleek de
 
 ## 🛠️ Architecture
 
-Pocket Music utilizes a hybrid multi-process architecture to combine Electron's native desktop integration with Python's rich media processing ecosystem.
+Pocket Music utilizes a hybrid multi-process architecture to combine Electron's native desktop features and Capacitor's mobile runtime with Python's rich media processing ecosystem.
 
 ```mermaid
 graph TD
     A[Electron Main Process] -->|IPC| B[React Renderer UI]
+    G[Capacitor Native Bridge] -->|Native API| B
     A -->|Spawns / Manages| C[FastAPI Python Backend]
     B -->|HTTP Range Requests| C
+    B -->|Audio Output Routing| H[Web Audio API Mixing]
     C -->|Indexes Media| D[(SQLite DB)]
     C -->|Downloads & Tags| E[yt-dlp / spotdl]
     A -->|Rich Presence Status| F[Discord API]
@@ -59,7 +66,8 @@ graph TD
 ## 📦 Tech Stack
 
 *   **Frontend**: React (v18), TypeScript, Tailwind CSS, Lucide React, Zustand (State Management).
-*   **Desktop App Layer**: Electron (v31) with Secure IPC, Preload Scripts, and Native Window integration.
+*   **Desktop Layer**: Electron (v31) with Secure IPC, Preload Scripts, and Native Window integration.
+*   **Mobile Layer**: Capacitor (v8) with a native Android project wrapper.
 *   **Backend Services**: Python 3, FastAPI, Uvicorn, Mutagen (ID3 Metadata tagging), `yt-dlp` (Media downloader).
 *   **Database**: SQLite via `better-sqlite3` for local library persistence and ultra-low-latency queries.
 
@@ -68,9 +76,10 @@ graph TD
 ## ⚙️ Development & Run
 
 ### Prerequisites
-*   [Node.js](https://nodejs.org/) (v20+)
+*   [Node.js](https://nodejs.org/) (v22+)
 *   [Python](https://www.python.org/) (v3.11+), with dependencies in `backend/requirements.txt` installed.
 *   [FFmpeg](https://ffmpeg.org/) installed and available on your system `PATH` (required for audio conversions).
+*   *For Android development*: [Android Studio](https://developer.android.com/studio) and JDK 21.
 
 ### Installation
 
@@ -92,17 +101,30 @@ graph TD
 
 ### Running Locally
 
+#### Desktop (Electron)
 To launch the application in development mode with hot-reloading for both the Vite frontend and Electron processes:
-
 ```bash
 npm run dev
+```
+
+#### Mobile (Android Emulator / Device)
+To compile the web assets, sync them with the Capacitor project, and run the Android app:
+```bash
+# Build the React application
+npm run build
+
+# Sync assets and dependencies to the Android project
+npx cap sync
+
+# Open the project in Android Studio (or run directly from CLI)
+npx cap open android
 ```
 
 ---
 
 ## 🚀 Building & Distribution
 
-Build production installers for your platform using the packaged `electron-builder` configuration:
+Build production installers or APK packages for your platform:
 
 ### macOS (`.dmg`)
 ```bash
@@ -114,12 +136,12 @@ npm run dist:mac
 npm run dist:win
 ```
 
-### All Platforms
+### Android APK (`.apk` debug / release)
+You can build the APK directly through Android Studio or run the command line gradle wrapper:
 ```bash
-npm run dist:all
+cd android && ./gradlew assembleDebug
 ```
-
-*Note: Code signing can be skipped locally for development builds by setting the environment variable `CSC_IDENTITY_AUTO_DISCOVERY=false`.*
+*Note: A GitHub Actions workflow (`android.yml`) is configured to automatically build and release the Android APK on every push to the `main` branch.*
 
 ---
 
