@@ -13,7 +13,10 @@ function getManager(): DiscordBotManager {
 export function registerDiscordIpc(getMainWindow: () => BrowserWindow | null): void {
   // Push status updates to renderer
   getManager().onStatusChange((state) => {
-    getMainWindow()?.webContents.send('discord:statusUpdate', state);
+    const win = getMainWindow();
+    if (win && !win.isDestroyed() && !win.webContents.isDestroyed()) {
+      win.webContents.send('discord:statusUpdate', state);
+    }
   });
 
   const channels = [

@@ -81,6 +81,10 @@ async function createWindow(): Promise<void> {
     mainWindow?.show();
   });
 
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
   // Load dev server or built file
   if (process.env.VITE_DEV_SERVER_URL) {
     await mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);

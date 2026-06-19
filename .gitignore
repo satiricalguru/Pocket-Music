@@ -11,6 +11,12 @@ build/
 # User data and media downloads
 music/
 spotlocal.db
+*.db-shm
+*.db-wal
+
+# Python cache
+__pycache__/
+*.pyc
 
 # Workspace / IDE files
 .DS_Store

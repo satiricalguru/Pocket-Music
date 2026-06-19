@@ -17,6 +17,7 @@ extraResources:
 asarUnpack:
   - "**/*better-sqlite3*/**"
   - "**/*better_sqlite3*"
+  - "**/*@snazzah/davey*/**"
 mac:
   target:
     - target: dmg
