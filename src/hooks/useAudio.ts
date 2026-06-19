@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { useDiscordStore } from '../store/useDiscordStore';
+import { useSoundboardStore } from '../store/useSoundboardStore';
 
 /**
  * Audio engine hook. Creates a single <audio> element, wires it to the
@@ -36,6 +37,13 @@ export function useAudio(): HTMLAudioElement | null {
     audio.preload = 'metadata';
     audioRef.current = audio;
     window.spotlocalAudio = audio;
+
+    // Trigger soundboard routing update if it was enabled in previous session
+    const sbState = useSoundboardStore.getState();
+    if (sbState.isEnabled) {
+      void sbState.updateRouting();
+    }
+
     return () => {
       delete window.spotlocalAudio;
     };

@@ -8,6 +8,7 @@ import {
   Heart,
   ListMusic,
   Settings,
+  Radio,
 } from 'lucide-react';
 import { useLibraryStore } from '../../store/useLibraryStore';
 import { PlaylistCover } from '../ui/PlaylistCover';
@@ -117,6 +118,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenSettings }) => {
           label="Downloads"
           active={activeView === 'downloads'}
           onClick={() => handleNavClick('downloads')}
+        />
+        <NavItem
+          icon={<Radio size={24} />}
+          label="Soundboard"
+          active={activeView === 'soundboard'}
+          onClick={() => handleNavClick('soundboard')}
         />
         {/* Discord with live indicator */}
         <button

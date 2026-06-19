@@ -13,6 +13,7 @@ import { AlbumDetailView } from '../views/AlbumDetailView';
 import { PlaylistView } from '../views/PlaylistView';
 import { DownloadsView } from '../views/DownloadsView';
 import { DiscordPanel } from '../discord/DiscordPanel';
+import { SoundboardPanel } from '../soundboard/SoundboardPanel';
 
 interface MainPanelProps {
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
@@ -90,6 +91,7 @@ export const MainPanel: React.FC<MainPanelProps> = ({ searchInputRef }) => {
     if (activeView === 'search') return <SearchView />;
     if (activeView === 'downloads') return <DownloadsView />;
     if (activeView === 'discord') return <DiscordPanel />;
+    if (activeView === 'soundboard') return <SoundboardPanel />;
     if (activeView.startsWith('album-')) {
       return <AlbumDetailView albumId={activeView.slice('album-'.length)} />;
     }

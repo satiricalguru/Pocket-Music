@@ -11,6 +11,7 @@ export type ActiveView =
   | 'search'
   | 'downloads'
   | 'discord'
+  | 'soundboard'
   | `album-${string}`
   | `playlist-${string}`;
 
