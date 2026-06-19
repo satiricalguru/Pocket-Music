@@ -112,7 +112,27 @@ async function createWindow(): Promise<void> {
   });
 }
 
+function ensureMacOsEnvPath(): void {
+  if (process.platform !== 'darwin') return;
+  const paths = [
+    '/opt/homebrew/bin',
+    '/usr/local/bin',
+    '/opt/local/bin',
+    '/Library/Frameworks/Python.framework/Versions/3.14/bin',
+    '/Library/Frameworks/Python.framework/Versions/3.13/bin',
+    '/Library/Frameworks/Python.framework/Versions/3.12/bin',
+    '/Library/Frameworks/Python.framework/Versions/3.11/bin',
+    '/Library/Frameworks/Python.framework/Versions/Current/bin',
+  ];
+  const currentPath = process.env.PATH || '';
+  const newPaths = paths.filter((p) => fs.existsSync(p) && !currentPath.includes(p));
+  if (newPaths.length > 0) {
+    process.env.PATH = `${newPaths.join(path.delimiter)}${path.delimiter}${currentPath}`;
+  }
+}
+
 app.whenReady().then(async () => {
+  ensureMacOsEnvPath();
   // Set dock icon on macOS in development or runtime
   if (process.platform === 'darwin') {
     const iconPath = path.join(__dirname, '../resources/icon.png');

@@ -15,6 +15,7 @@ export class BackendManager {
   private proc: ChildProcessByStdio<null, Readable, Readable> | null = null;
   readonly port = 7842;
   readonly baseUrl = `http://127.0.0.1:7842`;
+  private startupStderr: string[] = [];
 
   /** Resolve the path to backend/main.py whether packaged or in dev. */
   private resolveBackendPath(): string {
@@ -49,6 +50,8 @@ export class BackendManager {
       args.unshift('-3');
     }
 
+    this.startupStderr = [];
+
     this.proc = spawn(pythonBin, args, {
       env,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -59,7 +62,12 @@ export class BackendManager {
       console.log('[backend]', d.toString().trimEnd());
     });
     this.proc.stderr?.on('data', (d: Buffer) => {
-      console.error('[backend:err]', d.toString().trimEnd());
+      const msg = d.toString().trimEnd();
+      console.error('[backend:err]', msg);
+      this.startupStderr.push(msg);
+      if (this.startupStderr.length > 25) {
+        this.startupStderr.shift();
+      }
     });
     this.proc.on('exit', (code, signal) => {
       console.log(`[backend] exited code=${code} signal=${signal}`);
@@ -78,7 +86,10 @@ export class BackendManager {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       if (!this.proc) {
-        throw new Error('Backend process exited before becoming ready');
+        const errorLogs = this.startupStderr.join('\n');
+        throw new Error(
+          `Backend process exited before becoming ready.\n\nPython Logs:\n${errorLogs || 'No logs captured.'}`
+        );
       }
       try {
         const res = await fetch(`${this.baseUrl}/api/status`);
@@ -90,7 +101,10 @@ export class BackendManager {
       }
       await new Promise((r) => setTimeout(r, 200));
     }
-    throw new Error('Backend failed to start within 20 seconds');
+    const errorLogs = this.startupStderr.join('\n');
+    throw new Error(
+      `Backend failed to start within 20 seconds.\n\nPython Logs:\n${errorLogs || 'No logs captured.'}`
+    );
   }
 
   stop(): void {

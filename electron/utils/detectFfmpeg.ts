@@ -37,10 +37,20 @@ function ensureWin32FfmpegPath(): void {
  */
 export async function detectFfmpeg(): Promise<boolean> {
   ensureWin32FfmpegPath();
-  try {
-    await execa('ffmpeg', ['-version']);
-    return true;
-  } catch {
-    return false;
+  const candidates = [
+    'ffmpeg',
+    '/opt/homebrew/bin/ffmpeg',
+    '/usr/local/bin/ffmpeg',
+    '/usr/bin/ffmpeg',
+  ];
+
+  for (const bin of candidates) {
+    try {
+      await execa(bin, ['-version']);
+      return true;
+    } catch {
+      // Try next
+    }
   }
+  return false;
 }
