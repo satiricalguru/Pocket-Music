@@ -19,6 +19,21 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind badge" />
 </p>
 
+<p align="center">
+  <a href="https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music-1.0.0-arm64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Apple_Silicon-Download-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS ARM64" />
+  </a>
+  <a href="https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music-1.0.0.dmg">
+    <img src="https://img.shields.io/badge/macOS_Intel-Download-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS x64" />
+  </a>
+  <a href="https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music.Setup.1.0.0.exe">
+    <img src="https://img.shields.io/badge/Windows-Download-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows x64" />
+  </a>
+  <a href="https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music.Setup.1.0.0.apk">
+    <img src="https://img.shields.io/badge/Android-Download-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android APK" />
+  </a>
+</p>
+
 ---
 
 ## ✨ Overview
