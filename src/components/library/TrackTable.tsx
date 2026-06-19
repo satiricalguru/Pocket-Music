@@ -2,6 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { TrackRow } from './TrackRow';
 import type { Track } from '../../types';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface TrackTableProps {
   tracks: Track[];
@@ -22,6 +23,7 @@ export const TrackTable: React.FC<TrackTableProps> = ({
   onTracksChange,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   // Virtualize when there are more than 100 tracks
   const shouldVirtualize = tracks.length > 100;
@@ -44,9 +46,9 @@ export const TrackTable: React.FC<TrackTableProps> = ({
       ...(showDateAdded
         ? [{ key: 'added', label: 'Date added', width: '160px' }]
         : []),
-      {key: 'like', label: '', width: '40px', align: 'center'},
-      {key: 'duration', label: '⏱', width: '60px', align: 'right'},
-      {key: 'actions', label: '', width: '32px', align: 'center'},
+      { key: 'like', label: '', width: '40px', align: 'center' },
+      { key: 'duration', label: '⏱', width: '60px', align: 'right' },
+      { key: 'actions', label: '', width: '32px', align: 'center' },
     ],
     [showAlbum, showDateAdded]
   );
@@ -62,27 +64,35 @@ export const TrackTable: React.FC<TrackTableProps> = ({
   return (
     <div className="flex flex-col">
       {/* Header row */}
-      <div
-        className="grid items-center gap-2 px-4 border-b border-border text-xs uppercase tracking-wider text-text3"
-        style={{
-          gridTemplateColumns: headerCells
-            .map((c) => c.width === 'flex' ? '1fr' : c.width ?? '1fr')
-            .join(' '),
-          height: HEADER_HEIGHT,
-        }}
-      >
-        {headerCells.map((cell) => (
-          <div
-            key={cell.key}
-            className={cell.align === 'right' ? 'text-right' : cell.align === 'center' ? 'text-center' : ''}
-          >
-            {cell.label}
-          </div>
-        ))}
-      </div>
+      {!isMobile && (
+        <div
+          className="grid items-center gap-2 px-4 border-b border-border text-xs uppercase tracking-wider text-text3"
+          style={{
+            gridTemplateColumns: headerCells
+              .map((c) => c.width === 'flex' ? '1fr' : c.width ?? '1fr')
+              .join(' '),
+            height: HEADER_HEIGHT,
+          }}
+        >
+          {headerCells.map((cell) => (
+            <div
+              key={cell.key}
+              className={cell.align === 'right' ? 'text-right' : cell.align === 'center' ? 'text-center' : ''}
+            >
+              {cell.label}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Rows */}
-      <div ref={scrollRef} className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 360px)' }}>
+      <div
+        ref={scrollRef}
+        className="overflow-y-auto"
+        style={{
+          maxHeight: isMobile ? 'calc(100vh - 280px)' : 'calc(100vh - 360px)',
+        }}
+      >
         {shouldVirtualize ? (
           <div style={{ height: totalHeight, position: 'relative' }}>
             {virtualizer.getVirtualItems().map((virtualRow) => {

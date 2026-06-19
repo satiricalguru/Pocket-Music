@@ -7,6 +7,7 @@ import { ContextMenu } from '../ui/ContextMenu';
 import { EqualizerBars } from '../player/EqualizerBars';
 import { AddToPlaylistModal } from '../modals/AddToPlaylistModal';
 import type { Track } from '../../types';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface TrackRowProps {
   track: Track;
@@ -50,6 +51,7 @@ export const TrackRow: React.FC<TrackRowProps> = ({
   const [showAddToPlaylist, setShowAddToPlaylist] = useState(false);
   const [isDragOver, setIsDragOver] = useState<'top' | 'bottom' | null>(null);
 
+  const isMobile = useIsMobile();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
   const play = usePlayerStore((s) => s.play);
@@ -260,9 +262,13 @@ export const TrackRow: React.FC<TrackRowProps> = ({
   return (
     <>
       <div
-        className="grid items-center gap-2 px-4 rounded cursor-default group transition-colors duration-[var(--dur-fast)] relative"
+        className={
+          isMobile
+            ? "flex items-center justify-between px-3 py-2 rounded cursor-default group transition-colors duration-[var(--dur-fast)] relative"
+            : "grid items-center gap-2 px-4 rounded cursor-default group transition-colors duration-[var(--dur-fast)] relative"
+        }
         style={{
-          gridTemplateColumns: gridTemplate,
+          gridTemplateColumns: isMobile ? undefined : gridTemplate,
           height: 56,
           background: isActive ? 'rgba(255,255,255,0.1)' : undefined,
         }}
@@ -276,7 +282,7 @@ export const TrackRow: React.FC<TrackRowProps> = ({
         onDragLeave={handleDragLeave}
         onDragEnd={handleDragLeave}
         onDrop={handleDrop}
-        draggable
+        draggable={!isMobile}
       >
         {isDragOver === 'top' && (
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-green z-10 pointer-events-none" />
@@ -284,29 +290,32 @@ export const TrackRow: React.FC<TrackRowProps> = ({
         {isDragOver === 'bottom' && (
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-green z-10 pointer-events-none" />
         )}
-        {/* Index / play / equalizer */}
-        <div className="flex items-center justify-end pr-2">
-          {isActive && isPlaying ? (
-            isHovering ? (
-              <button onClick={(e) => { e.stopPropagation(); togglePlay(); }}>
-                <Pause size={14} className="text-text1" fill="currentColor" />
+        
+        {/* Index / play / equalizer (Desktop Only) */}
+        {!isMobile && (
+          <div className="flex items-center justify-end pr-2">
+            {isActive && isPlaying ? (
+              isHovering ? (
+                <button onClick={(e) => { e.stopPropagation(); togglePlay(); }}>
+                  <Pause size={14} className="text-text1" fill="currentColor" />
+                </button>
+              ) : (
+                <EqualizerBars playing={true} />
+              )
+            ) : isHovering ? (
+              <button onClick={(e) => { e.stopPropagation(); handleClick(); }}>
+                <Play size={14} className="text-text1" fill="currentColor" />
               </button>
             ) : (
-              <EqualizerBars playing={true} />
-            )
-          ) : isHovering ? (
-            <button onClick={(e) => { e.stopPropagation(); handleClick(); }}>
-              <Play size={14} className="text-text1" fill="currentColor" />
-            </button>
-          ) : (
-            <span className={isActive ? 'text-green text-sm tabular-nums' : 'text-text3 text-sm tabular-nums'}>
-              {index + 1}
-            </span>
-          )}
-        </div>
+              <span className={isActive ? 'text-green text-sm tabular-nums' : 'text-text3 text-sm tabular-nums'}>
+                {index + 1}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Title + cover */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="w-10 h-10 rounded shrink-0 overflow-hidden bg-surface">
             {track.cover_art_url ? (
               <img
@@ -323,7 +332,7 @@ export const TrackRow: React.FC<TrackRowProps> = ({
               </div>
             )}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div
               className={`text-sm font-medium truncate ${
                 isActive ? 'text-green' : 'text-text1'
@@ -331,32 +340,32 @@ export const TrackRow: React.FC<TrackRowProps> = ({
             >
               {track.title}
             </div>
-            <div className="text-xs text-text2 truncate hover:underline cursor-pointer hover:text-text1">
+            <div className="text-xs text-text2 truncate hover:underline cursor-pointer hover:text-text1 mt-0.5">
               {track.artist}
             </div>
           </div>
         </div>
 
-        {/* Album */}
-        {showAlbum && (
+        {/* Album (Desktop Only) */}
+        {!isMobile && showAlbum && (
           <div className="text-sm text-text2 truncate hover:underline cursor-pointer hover:text-text1">
             {track.album ?? '—'}
           </div>
         )}
 
-        {/* Date added */}
-        {showDateAdded && (
+        {/* Date added (Desktop Only) */}
+        {!isMobile && showDateAdded && (
           <div className="text-sm text-text3 truncate">
             {formatDate(track.added_at)}
           </div>
         )}
 
-        {/* Like */}
-        <div className="flex items-center justify-center">
+        {/* Like (Visible always on mobile, hover on desktop) */}
+        <div className="flex items-center justify-center shrink-0 px-2">
           <button
             onClick={handleLike}
             className={`transition-opacity ${
-              track.is_liked || isHovering ? 'opacity-100' : 'opacity-0'
+              track.is_liked || isHovering || isMobile ? 'opacity-100' : 'opacity-0'
             }`}
             title={track.is_liked ? 'Unlike' : 'Like'}
           >
@@ -371,17 +380,19 @@ export const TrackRow: React.FC<TrackRowProps> = ({
           </button>
         </div>
 
-        {/* Duration */}
-        <div className="text-sm text-text3 text-right tabular-nums">
-          {formatDuration(track.duration)}
-        </div>
+        {/* Duration (Desktop Only) */}
+        {!isMobile && (
+          <div className="text-sm text-text3 text-right tabular-nums">
+            {formatDuration(track.duration)}
+          </div>
+        )}
 
         {/* Actions (Three Dots) */}
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center shrink-0 pl-1">
           <button
             onClick={handleMoreClick}
             className={`transition-opacity duration-[var(--dur-fast)] ${
-              isHovering ? 'opacity-100' : 'opacity-0'
+              isHovering || isMobile ? 'opacity-100' : 'opacity-0'
             }`}
             title="More options"
           >

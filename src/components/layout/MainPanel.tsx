@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Search, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Download, Settings } from 'lucide-react';
 import { useLibraryStore, type ActiveView } from '../../store/useLibraryStore';
 import { useDownloadStore } from '../../store/useDownloadStore';
 import { AddUrlBar } from '../downloader/AddUrlBar';
@@ -17,9 +17,15 @@ import { SoundboardPanel } from '../soundboard/SoundboardPanel';
 
 interface MainPanelProps {
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
+  isMobile?: boolean;
+  onOpenSettings?: () => void;
 }
 
-export const MainPanel: React.FC<MainPanelProps> = ({ searchInputRef }) => {
+export const MainPanel: React.FC<MainPanelProps> = ({
+  searchInputRef,
+  isMobile = false,
+  onOpenSettings,
+}) => {
   const [viewHistory, setViewHistory] = useState<ActiveView[]>(['home']);
   const [forwardHistory, setForwardHistory] = useState<ActiveView[]>([]);
   const [urlBarVisible, setUrlBarVisible] = useState(true);
@@ -86,6 +92,7 @@ export const MainPanel: React.FC<MainPanelProps> = ({ searchInputRef }) => {
   const renderView = () => {
     if (activeView === 'home') return <HomeView />;
     if (activeView === 'library') return <LibraryView />;
+    if (activeView === 'library-tracks') return <LibraryView forceTracksView />;
     if (activeView === 'albums') return <AlbumsView />;
     if (activeView === 'liked') return <LikedSongsView />;
     if (activeView === 'search') return <SearchView />;
@@ -101,70 +108,93 @@ export const MainPanel: React.FC<MainPanelProps> = ({ searchInputRef }) => {
     return <HomeView />;
   };
 
+  const isPrimaryView =
+    activeView === 'home' || activeView === 'search' || activeView === 'library';
+
   return (
     <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
       {/* Top navigation bar */}
       <div className="flex items-center h-[var(--topbar-h)] px-6 gap-4 shrink-0">
         {/* Back/forward */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={goBack}
-            disabled={viewHistory.length <= 1}
-            className="p-1 rounded-full text-text2 hover:text-text1 disabled:text-text4 transition-colors"
-            title="Go back"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={goForward}
-            disabled={forwardHistory.length === 0}
-            className="p-1 rounded-full text-text2 hover:text-text1 disabled:text-text4 transition-colors"
-            title="Go forward"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        {(!isMobile || !isPrimaryView) && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={goBack}
+              disabled={viewHistory.length <= 1}
+              className="p-1 rounded-full text-text2 hover:text-text1 disabled:text-text4 transition-colors"
+              title="Go back"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            {!isMobile && (
+              <button
+                onClick={goForward}
+                disabled={forwardHistory.length === 0}
+                className="p-1 rounded-full text-text2 hover:text-text1 disabled:text-text4 transition-colors"
+                title="Go forward"
+              >
+                <ChevronRight size={20} />
+              </button>
+            )}
+          </div>
+        )}
 
-        {/* Search input */}
-        <div className="relative flex-1 max-w-[364px]">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
-          <input
-            ref={searchRef}
-            type="text"
-            placeholder="What do you want to listen to?"
-            value={activeView === 'search' ? searchQuery : ''}
-            onChange={(e) => handleSearch(e.target.value)}
-            onFocus={() => {
-              if (!searchQuery) navigateTo('search');
-            }}
-            className="w-full h-10 pl-10 pr-4 rounded-full bg-input border border-transparent
-              text-sm text-text1 placeholder:text-text3
-              hover:border-text4 hover:bg-input-h
-              focus:border-white focus:outline-none focus:ring-1 focus:ring-white
-              transition-all duration-[var(--dur-fast)]"
-          />
-        </div>
+        {/* Search input (hidden on mobile, moved inside SearchView) */}
+        {!isMobile && (
+          <div className="relative flex-1 max-w-[364px]">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="What do you want to listen to?"
+              value={activeView === 'search' ? searchQuery : ''}
+              onChange={(e) => handleSearch(e.target.value)}
+              onFocus={() => {
+                if (!searchQuery) navigateTo('search');
+              }}
+              className="w-full h-10 pl-10 pr-4 rounded-full bg-input border border-transparent
+                text-sm text-text1 placeholder:text-text3
+                hover:border-text4 hover:bg-input-h
+                focus:border-white focus:outline-none focus:ring-1 focus:ring-white
+                transition-all duration-[var(--dur-fast)]"
+            />
+          </div>
+        )}
 
-        {/* Downloads toggle */}
-        <button
-          onClick={togglePanel}
-          className="p-2 rounded-full text-text2 hover:text-text1 hover:bg-surface-h transition-colors relative ml-auto"
-          title="Downloads"
-        >
-          <Download size={20} />
-          {activeJobs.length > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-green text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-              {activeJobs.length}
-            </span>
-          )}
-        </button>
+        {/* Right action controls */}
+        {isMobile ? (
+          isPrimaryView && (
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                onClick={onOpenSettings}
+                className="p-2 rounded-full text-text2 hover:text-text1 transition-colors"
+                title="Settings"
+              >
+                <Settings size={20} />
+              </button>
+            </div>
+          )
+        ) : (
+          <button
+            onClick={togglePanel}
+            className="p-2 rounded-full text-text2 hover:text-text1 hover:bg-surface-h transition-colors relative ml-auto"
+            title="Downloads"
+          >
+            <Download size={20} />
+            {activeJobs.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-green text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {activeJobs.length}
+              </span>
+            )}
+          </button>
+        )}
       </div>
 
       {/* URL bar (onboarding) */}
       {urlBarVisible && !activeView.startsWith('playlist-') && !activeView.startsWith('album-') && activeView !== 'liked' && activeView !== 'home' && activeView !== 'downloads' && activeView !== 'search' && <AddUrlBar />}
 
       {/* Downloads Popover Panel */}
-      {isPanelOpen && <DownloadPanel />}
+      {!isMobile && isPanelOpen && <DownloadPanel />}
 
       {/* View content */}
       <div className="flex-1 overflow-y-auto">{renderView()}</div>

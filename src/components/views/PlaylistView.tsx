@@ -89,27 +89,26 @@ export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId }) => {
   }
 
   return (
-    <div className="fade-in">
+    <div className="fade-in pb-24">
       {/* Hero */}
       <div
-        className="px-6 pb-6"
+        className="px-6 pt-16 pb-6 md:pt-20 md:pb-6 md:px-8"
         style={{
           background: 'linear-gradient(135deg, #1a3a2a 0%, #0d1b14 100%)',
-          padding: '60px 32px 24px',
         }}
       >
-        <div className="flex items-end gap-6">
+        <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
           <PlaylistCover
             coverArt={playlist.cover_art}
             coverArtGrid={playlist.cover_art_grid}
             iconSize={64}
-            className="w-[232px] h-[232px] rounded shadow-2xl bg-surface"
+            className="w-40 h-40 md:w-[232px] md:h-[232px] rounded shadow-2xl bg-surface shrink-0"
           />
           <div className="pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider mb-1">Playlist</p>
+            <p className="text-xs font-bold uppercase tracking-wider mb-1 text-text2">Playlist</p>
             <h1
               onClick={handleRename}
-              className="text-5xl font-extrabold mb-2 hover:underline cursor-pointer select-none"
+              className="text-3xl md:text-5xl font-extrabold mb-2 hover:underline cursor-pointer select-none"
               title="Click to rename"
             >
               {playlist.name}
@@ -125,11 +124,11 @@ export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId }) => {
       </div>
 
       {/* Action bar */}
-      <div className="px-6 py-4 flex items-center gap-4">
+      <div className="px-6 py-4 flex items-center justify-center md:justify-start gap-4">
         <button
           onClick={handlePlayAll}
           disabled={playlistTracks.length === 0}
-          className="w-14 h-14 rounded-full bg-green flex items-center justify-center hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-14 h-14 rounded-full bg-green flex items-center justify-center hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           title={isCurrentPlaylistPlaying ? 'Pause' : 'Play'}
         >
           {isCurrentPlaylistPlaying ? (
@@ -147,7 +146,6 @@ export const PlaylistView: React.FC<PlaylistViewProps> = ({ playlistId }) => {
           onClick={() => {
             const playerStore = usePlayerStore.getState();
             playerStore.toggleShuffle();
-            // If shuffle was turned ON and we aren't currently playing, start playing
             if (!playerStore.isShuffle && !isCurrentPlaylistPlaying && playlistTracks.length > 0) {
               const randomIdx = Math.floor(Math.random() * playlistTracks.length);
               playerStore.play(playlistTracks[randomIdx], playlistTracks);

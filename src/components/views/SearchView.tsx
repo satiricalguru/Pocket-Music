@@ -1,22 +1,26 @@
 import React, { useEffect, useMemo } from 'react';
+import { Search } from 'lucide-react';
 import { useLibraryStore } from '../../store/useLibraryStore';
 import { TrackTable } from '../library/TrackTable';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export const SearchView: React.FC = () => {
   const searchQuery = useLibraryStore((s) => s.searchQuery);
+  const setSearchQuery = useLibraryStore((s) => s.setSearchQuery);
   const tracks = useLibraryStore((s) => s.tracks);
+  const isMobile = useIsMobile();
 
-  // Auto-focus the search input (the one in MainPanel topbar)
+  // Auto-focus the search input
   useEffect(() => {
-    // Brief delay so the MainPanel input mounts
     const timer = setTimeout(() => {
-      const mainInput = document.querySelector<HTMLInputElement>(
-        'main input[type="text"]'
-      );
-      mainInput?.focus();
+      // On mobile, let's focus the input inside the search view
+      const targetInput = isMobile
+        ? document.querySelector<HTMLInputElement>('.mobile-search-input')
+        : document.querySelector<HTMLInputElement>('main input[type="text"]');
+      targetInput?.focus();
     }, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isMobile]);
 
   const results = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
@@ -30,7 +34,28 @@ export const SearchView: React.FC = () => {
   }, [searchQuery, tracks]);
 
   return (
-    <div className="px-6 py-6 fade-in">
+    <div className="px-6 py-6 fade-in pb-24">
+      {/* Mobile-only header and search input */}
+      {isMobile && (
+        <div className="mb-6">
+          <h1 className="text-3xl font-extrabold text-text1 mb-4 select-none">Search</h1>
+          <div className="relative">
+            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-text3" />
+            <input
+              type="text"
+              placeholder="What do you want to listen to?"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="mobile-search-input w-full h-12 pl-12 pr-4 rounded-md bg-highlight border border-transparent
+                text-sm text-text1 placeholder:text-text3
+                hover:border-text4 hover:bg-input-h
+                focus:border-white focus:outline-none focus:ring-1 focus:ring-white
+                transition-all duration-[var(--dur-fast)]"
+            />
+          </div>
+        </div>
+      )}
+
       {searchQuery.trim() ? (
         <>
           <h2 className="text-xl font-bold mb-4">

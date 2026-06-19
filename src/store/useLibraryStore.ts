@@ -6,6 +6,7 @@ import { usePlayerStore } from './usePlayerStore';
 export type ActiveView =
   | 'home'
   | 'library'
+  | 'library-tracks'
   | 'albums'
   | 'liked'
   | 'search'

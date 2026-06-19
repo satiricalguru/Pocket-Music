@@ -12,6 +12,9 @@ import { NowPlayingPanel } from './NowPlayingPanel';
 import { FullscreenView } from '../player/FullscreenView';
 
 import { FfmpegMissingModal } from '../modals/FfmpegMissingModal';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { MobilePlayerAndNav } from './MobilePlayerAndNav';
+import { MobileNowPlaying } from './MobileNowPlaying';
 
 interface AppLayoutProps {
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
@@ -22,6 +25,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ searchInputRef, hasFfmpeg 
   const [platform, setPlatform] = React.useState<string>('darwin');
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [showFfmpegModal, setShowFfmpegModal] = React.useState(!hasFfmpeg);
+
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     setPlatform(window.spotlocal.getPlatform());
@@ -67,38 +72,45 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ searchInputRef, hasFfmpeg 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-base">
       {/* Windows custom titlebar or macOS drag region */}
-      {isWindows ? (
-        <WindowsTitleBar />
-      ) : isMac ? (
-        <MacOSDragRegion />
-      ) : null}
+      {!isMobile && (
+        isWindows ? (
+          <WindowsTitleBar />
+        ) : isMac ? (
+          <MacOSDragRegion />
+        ) : null
+      )}
 
       {/* Main content area: sidebar + main panel */}
       <div className="flex flex-1 min-h-0 relative">
-        <Sidebar onOpenSettings={() => setSettingsOpen(true)} />
+        {!isMobile && <Sidebar onOpenSettings={() => setSettingsOpen(true)} />}
         
         {/* Left Sidebar Resize Handle */}
-        <div
-          onMouseDown={handleSidebarMouseDown}
-          className="w-[2px] hover:w-[4px] bg-[#282828] hover:bg-[#b3b3b3] active:bg-green cursor-col-resize transition-all z-20 shrink-0 h-full"
+        {!isMobile && (
+          <div
+            onMouseDown={handleSidebarMouseDown}
+            className="w-[2px] hover:w-[4px] bg-[#282828] hover:bg-[#b3b3b3] active:bg-green cursor-col-resize transition-all z-20 shrink-0 h-full"
+          />
+        )}
+
+        <MainPanel
+          searchInputRef={searchInputRef}
+          isMobile={isMobile}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
 
-        <MainPanel searchInputRef={searchInputRef} />
-
-
         {/* Right NowPlayingPanel Resize Handle */}
-        {isNowPlayingOpen && currentTrack && (
+        {!isMobile && isNowPlayingOpen && currentTrack && (
           <div
             onMouseDown={handleNowPlayingMouseDown}
             className="w-[2px] hover:w-[4px] bg-[#282828] hover:bg-[#b3b3b3] active:bg-green cursor-col-resize transition-all z-20 shrink-0 h-full"
           />
         )}
         
-        {isNowPlayingOpen && currentTrack && <NowPlayingPanel />}
+        {!isMobile && isNowPlayingOpen && currentTrack && <NowPlayingPanel />}
       </div>
 
-      {/* Bottom player bar */}
-      <PlayerBar />
+      {/* Bottom Player / Nav Bar */}
+      {isMobile ? <MobilePlayerAndNav /> : <PlayerBar />}
 
       {/* Toast container */}
       <Toast />
@@ -112,7 +124,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ searchInputRef, hasFfmpeg 
       )}
 
       {/* Fullscreen presentation view */}
-      {isFullscreen && currentTrack && <FullscreenView />}
+      {isFullscreen && currentTrack && (
+        isMobile ? <MobileNowPlaying /> : <FullscreenView />
+      )}
     </div>
   );
 };

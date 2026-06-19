@@ -39,17 +39,16 @@ export const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ albumId }) => 
   }
 
   return (
-    <div className="fade-in">
+    <div className="fade-in pb-24">
       {/* Hero */}
       <div
-        className="px-6 pb-6"
+        className="px-6 pt-16 pb-6 md:pt-20 md:pb-6 md:px-8"
         style={{
-          background: bgColor,
-          padding: '60px 32px 24px',
+          background: bgColor || 'linear-gradient(135deg, #242424 0%, #121212 100%)',
         }}
       >
-        <div className="flex items-end gap-6">
-          <div className="w-[232px] h-[232px] rounded bg-surface flex items-center justify-center shrink-0 overflow-hidden shadow-2xl">
+        <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
+          <div className="w-40 h-40 md:w-[232px] md:h-[232px] rounded bg-surface flex items-center justify-center shrink-0 overflow-hidden shadow-2xl">
             {album.cover_art_url ? (
               <img
                 src={album.cover_art_url}
@@ -66,8 +65,8 @@ export const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ albumId }) => 
             )}
           </div>
           <div className="pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider mb-1">Album</p>
-            <h1 className="text-5xl font-extrabold mb-4">{album.name}</h1>
+            <p className="text-xs font-bold uppercase tracking-wider mb-1 text-text2">Album</p>
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-4">{album.name}</h1>
             <p className="text-sm opacity-80">
               {album.artist}
               {album.year ? ` · ${album.year}` : ''} · {albumTracks.length}{' '}
@@ -78,10 +77,10 @@ export const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ albumId }) => 
       </div>
 
       {/* Action bar */}
-      <div className="px-6 py-4 flex items-center gap-4">
+      <div className="px-6 py-4 flex items-center justify-center md:justify-start gap-4">
         <button
           onClick={handlePlayAll}
-          className="w-14 h-14 rounded-full bg-green flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
+          className="w-14 h-14 rounded-full bg-green flex items-center justify-center hover:scale-105 transition-transform shadow-lg shrink-0"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="black">
             <polygon points="8,5 19,12 8,19" />
