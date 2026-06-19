@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { Track, Album, Playlist, SortField, SortDir } from '../types';
+import { usePlayerStore } from './usePlayerStore';
 
 export type ActiveView =
   | 'home'
@@ -118,6 +119,60 @@ export const useLibraryStore = create<LibraryState>()(
         set((s) => {
           s.tracks = s.tracks.filter((t) => t.id !== id);
         });
+
+        // Sync with player queue
+        const player = usePlayerStore.getState();
+        const inQueue = player.queue.some((t) => t.id === id);
+        if (inQueue) {
+          const newQueue = player.queue.filter((t) => t.id !== id);
+          const newOrigQueue = player.originalQueue.filter((t) => t.id !== id);
+
+          if (newQueue.length === 0) {
+            usePlayerStore.setState({
+              queue: [],
+              originalQueue: [],
+              currentIndex: -1,
+              currentTrack: null,
+              isPlaying: false,
+              progress: 0,
+              duration: 0,
+            });
+            if (window.spotlocalAudio) {
+              window.spotlocalAudio.pause();
+              window.spotlocalAudio.src = '';
+            }
+            void window.spotlocal.discordNotifyPause().catch(() => {});
+          } else {
+            const isCurrent = player.currentTrack?.id === id;
+            if (isCurrent) {
+              const deletedIndex = player.queue.findIndex((t) => t.id === id);
+              let nextIdx = deletedIndex;
+              if (nextIdx >= newQueue.length) {
+                nextIdx = newQueue.length - 1;
+              }
+              const nextTrack = newQueue[nextIdx];
+              usePlayerStore.setState({
+                queue: newQueue,
+                originalQueue: newOrigQueue,
+                currentIndex: nextIdx,
+                currentTrack: nextTrack,
+                progress: 0,
+                duration: nextTrack.duration ?? 0,
+              });
+            } else {
+              const deletedIndex = player.queue.findIndex((t) => t.id === id);
+              let newIdx = player.currentIndex;
+              if (deletedIndex < player.currentIndex) {
+                newIdx -= 1;
+              }
+              usePlayerStore.setState({
+                queue: newQueue,
+                originalQueue: newOrigQueue,
+                currentIndex: newIdx,
+              });
+            }
+          }
+        }
       } catch (err) {
         console.error('[library] deleteTrack failed:', err);
       }
