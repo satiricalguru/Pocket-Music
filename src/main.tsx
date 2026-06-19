@@ -1,3 +1,4 @@
+import './fallback-api';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './globals.css';
