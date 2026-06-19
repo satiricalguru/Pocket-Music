@@ -55,23 +55,23 @@ const api = {
   showInFolder: (p: string) => ipcRenderer.invoke('system:showInFolder', p),
   openFolder: (p: string) => ipcRenderer.invoke('system:openFolder', p),
   openExternal: (url: string) => ipcRenderer.invoke('system:openExternal', url),
-  getPlatform: () => process.platform,
+  getPlatform: () => process.platform as any,
 
   // === App lifecycle events ===
   onAppReady: (cb: (d: unknown) => void) => {
     const handler = (_: IpcRendererEvent, d: unknown) => cb(d);
     ipcRenderer.on('app:ready', handler);
-    return () => ipcRenderer.removeListener('app:ready', handler);
+    return () => { ipcRenderer.removeListener('app:ready', handler); };
   },
   onAppLoading: (cb: (d: unknown) => void) => {
     const handler = (_: IpcRendererEvent, d: unknown) => cb(d);
     ipcRenderer.on('app:loading', handler);
-    return () => ipcRenderer.removeListener('app:loading', handler);
+    return () => { ipcRenderer.removeListener('app:loading', handler); };
   },
   onAppError: (cb: (d: unknown) => void) => {
     const handler = (_: IpcRendererEvent, d: unknown) => cb(d);
     ipcRenderer.on('app:error', handler);
-    return () => ipcRenderer.removeListener('app:error', handler);
+    return () => { ipcRenderer.removeListener('app:error', handler); };
   },
 
   // === Window controls (Windows only) ===
@@ -92,7 +92,7 @@ const api = {
   onDiscordStatusUpdate: (cb: (state: unknown) => void) => {
     const handler = (_: IpcRendererEvent, state: unknown) => cb(state);
     ipcRenderer.on('discord:statusUpdate', handler);
-    return () => ipcRenderer.removeListener('discord:statusUpdate', handler);
+    return () => { ipcRenderer.removeListener('discord:statusUpdate', handler); };
   },
 };
 
