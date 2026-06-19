@@ -157,11 +157,20 @@ export const useSoundboardStore = create<SoundboardState>()(
 
           if (isEnabled) {
             // 1. Microphone capture setup
-            const currentTrack = micStream?.getAudioTracks()[0];
-            const settings = currentTrack?.getSettings();
-            
-            // Re-capture mic if device ID changes or stream doesn't exist
-            if (!micStream || settings?.deviceId !== inputDeviceId) {
+            let needsNewMic = !micStream || !micSourceNode;
+            if (micStream) {
+              const activeTrack = micStream.getAudioTracks()[0];
+              if (!activeTrack) {
+                needsNewMic = true;
+              } else {
+                const activeDeviceId = activeTrack.getSettings().deviceId;
+                if (inputDeviceId && activeDeviceId !== inputDeviceId) {
+                  needsNewMic = true;
+                }
+              }
+            }
+
+            if (needsNewMic) {
               if (micStream) {
                 micStream.getTracks().forEach((t) => t.stop());
               }
@@ -197,7 +206,7 @@ export const useSoundboardStore = create<SoundboardState>()(
               monitorGainNode.connect(audioCtx.destination);
             }
 
-            // 4. Setup mixed output destination playback (hidden element)
+            // 4. Setup mixed output destination playback (hidden element in DOM for Chromium)
             if (soundboardAudioElement) {
               const currentSrcObj = soundboardAudioElement.srcObject;
               if (currentSrcObj !== mixDestinationNode.stream) {
@@ -207,6 +216,8 @@ export const useSoundboardStore = create<SoundboardState>()(
               }
             } else {
               soundboardAudioElement = new Audio();
+              soundboardAudioElement.style.display = 'none';
+              document.body.appendChild(soundboardAudioElement);
               soundboardAudioElement.srcObject = mixDestinationNode.stream;
               await soundboardAudioElement.play().catch(() => {});
             }
@@ -230,10 +241,16 @@ export const useSoundboardStore = create<SoundboardState>()(
             }
             micSourceNode = null;
 
-            // Stop output redirection
+            // Stop output redirection and remove from DOM
             if (soundboardAudioElement) {
               soundboardAudioElement.pause();
               soundboardAudioElement.srcObject = null;
+              try {
+                document.body.removeChild(soundboardAudioElement);
+              } catch (e) {
+                /* ignore */
+              }
+              soundboardAudioElement = null;
             }
 
             // Route music directly to standard local monitoring speakers
