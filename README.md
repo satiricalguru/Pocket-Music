@@ -54,8 +54,8 @@ If you just want to run the application without building it from source, you can
 | :--- | :--- | :--- |
 | 🍎 **macOS** | Apple Silicon (M1/M2/M3/M4) | [Download `.dmg` (ARM64)](https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music-1.0.0-arm64.dmg) |
 | 🍎 **macOS** | Intel Processor | [Download `.dmg` (x64)](https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music-1.0.0.dmg) |
-| 🔷 **Windows** | Windows 10 / 11 (64-bit) | [Download Setup `.exe`](https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music.Setup.1.0.0.exe) |
-| 🤖 **Android** | Android Phone / Tablet | [Download `.apk` (Capacitor)](https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music.Setup.1.0.0.apk) |
+| 🖥️ **Windows** | Windows 10 / 11 (64-bit) | [Download Setup `.exe`](https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music.Setup.1.0.0.exe) |
+| 📱 **Android** | Android Phone / Tablet | [Download `.apk` (Capacitor)](https://github.com/satiricalguru/Pocket-Music/releases/download/v1.0.0/Pocket.Music.Setup.1.0.0.apk) |
 
 *You can also view all releases, changelogs, and older builds on the [GitHub Releases Page](https://github.com/satiricalguru/Pocket-Music/releases).*
 
