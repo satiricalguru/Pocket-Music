@@ -60,6 +60,15 @@ If you just want to run the application without building it from source, you can
 *You can also view all releases, changelogs, and older builds on the [GitHub Releases Page](https://github.com/satiricalguru/Pocket-Music/releases).*
 
 ---
+## 📷 Screenshots
+
+<img width="2924" height="1700" alt="image" src="https://github.com/user-attachments/assets/c8b6bc59-5ead-4c60-a487-679d34776ec6" />
+<img width="2918" height="1700" alt="image" src="https://github.com/user-attachments/assets/1f4cd612-c126-4a2c-a3b5-6c129cd32003" />
+<img width="2914" height="1696" alt="image" src="https://github.com/user-attachments/assets/dc27b5a9-dcc3-4780-b803-2703a9d253e9" />
+<img width="2924" height="1702" alt="image" src="https://github.com/user-attachments/assets/1f68681d-5c1b-4b61-9844-a4c3aced3b76" />
+
+
+---
 
 ## 🚀 Key Features
 
